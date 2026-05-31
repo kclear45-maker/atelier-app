@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3efe8" />
+    <title>Atelier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body data-page="home">
+    <div class="app-bg" aria-hidden="true"></div>
+
+    <div class="app-shell app-shell--enter">
+      <header class="app-header">
+        <div class="app-header__top">
+          <div class="app-header__titles">
+            <p class="app-header__title">おかえりなさい。</p>
+            <p class="app-header__subtitle">
+              何を描いてもいい、あなたのキャンバスです。
+            </p>
+          </div>
+          <button
+            type="button"
+            class="app-header__icon"
+            id="menu-toggle"
+            aria-label="メニューを開く"
+            aria-expanded="false"
+            aria-controls="drawer"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 7h14M5 12h14M5 17h14"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="app-main" id="main">
+        <div class="section-head">
+          <h2 class="section-head__title">あなたの作品</h2>
+          <button type="button" class="btn-pill">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            新しく始める
+          </button>
+        </div>
+
+        <div class="work-list">
+          <div class="work-card work-card--primary" data-work-id="hoshi-no-ochiru-machi">
+            <button type="button" class="work-card__hit" aria-label="星の落ちる町を開く">
+              <span class="work-card__accent" aria-hidden="true"></span>
+              <div class="work-card__thumb" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M4 18l6-10 4 6 3-4 3 8H4z"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8 18l2.5-4"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <div class="work-card__body">
+                <p class="work-card__name">星の落ちる町</p>
+                <p class="work-card__meta">小説</p>
+                <span class="work-card__badge">今ここ：プロット</span>
+                <div class="work-card__activity">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M12 3l1.2 3.4h3.6l-2.8 2 1.1 3.4L12 10.2 9 11.8l1.1-3.4-2.8-2h3.6L12 3z"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  最近、触れています
+                </div>
+              </div>
+            </button>
+            <button type="button" class="work-card__menu" aria-label="作品のその他の操作">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="6" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="12" cy="18" r="1.6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="work-card" data-work-id="asayake-no-tanpen">
+            <button type="button" class="work-card__hit" aria-label="朝焼けの短編を開く">
+              <span class="work-card__accent" aria-hidden="true"></span>
+              <div class="work-card__thumb" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 4h10a2 2 0 012 2v11l-4-3-4 3V6a2 2 0 00-2-2z"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div class="work-card__body">
+                <p class="work-card__name">朝焼けの短編</p>
+                <p class="work-card__meta">漫画</p>
+                <span class="work-card__badge">今ここ：ネーム</span>
+              </div>
+            </button>
+            <button type="button" class="work-card__menu" aria-label="作品のその他の操作">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="6" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="12" cy="18" r="1.6" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="work-card" data-work-id="mudai-no-illustration">
+            <button type="button" class="work-card__hit" aria-label="無題のイラストを開く">
+              <span class="work-card__accent" aria-hidden="true"></span>
+              <div class="work-card__thumb" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M5 19l4-14 3 8 2-5 5 11"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div class="work-card__body">
+                <p class="work-card__name">無題のイラスト</p>
+                <p class="work-card__meta">イラスト</p>
+                <span class="work-card__badge">今ここ：ラフ</span>
+              </div>
+            </button>
+            <button type="button" class="work-card__menu" aria-label="作品のその他の操作">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="6" r="1.6" />
+                <circle cx="12" cy="12" r="1.6" />
+                <circle cx="12" cy="18" r="1.6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <section class="memo-card" aria-labelledby="memo-label">
+          <p class="memo-card__label" id="memo-label">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M8 4h10a2 2 0 012 2v14l-4-3-4 3V6a2 2 0 00-2-2z"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linejoin="round"
+              />
+            </svg>
+            ひとことメモ
+          </p>
+          <p class="memo-card__text">
+            急がなくていいです。昨日より一歩だけ進めば、それで十分です。
+          </p>
+        </section>
+      </main>
+
+      <nav class="app-nav" aria-label="メインナビゲーション">
+        <a class="app-nav__link app-nav__link--active" href="/" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 10.5 12 4l7 6.5V19a1 1 0 01-1 1h-5v-6H11v6H6a1 1 0 01-1-1v-8.5z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+          </svg>
+          ホーム
+        </a>
+        <a class="app-nav__link" href="/record.html">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 19l4-14 3 8 2-5 5 11"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          記録する
+        </a>
+        <a class="app-nav__link" href="/settings.html">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"
+              stroke="currentColor"
+              stroke-width="1.6"
+            />
+            <path
+              d="M19 12h2M3 12h2m14.5-5.5l1.4-1.4M5.1 18.4 3.7 19.8M18.4 5.1 19.8 3.7M12 3v2m0 14v2m5.5-14.5l1.4-1.4M5.1 5.1 3.7 3.7M18.4 18.4l1.4 1.4"
+              stroke="currentColor"
+              stroke-width="1.4"
+              stroke-linecap="round"
+            />
+          </svg>
+          設定
+        </a>
+      </nav>
+    </div>
+
+    <div class="app-drawer-overlay" id="drawer-overlay" aria-hidden="true"></div>
+    <aside class="app-drawer" id="drawer" aria-label="メニュー">
+      <p class="app-drawer__title">メニュー</p>
+      <a href="/">ホーム</a>
+      <a href="/record.html">記録する</a>
+      <a href="/settings.html">設定</a>
+    </aside>
+
+    <script src="/js/app-shell.js" defer></script>
+    <script src="/js/home.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,1755 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Figma キャンバス: 390×844（iPhone 13/14）— 上限幅の参考値 */
+  --width-design: 390px;
+  --height-design: 844px;
+
+  /* 390px 基準の比率 → clamp で小画面〜大画面まで伸縮 */
+  --spacing-page-x: clamp(1.25rem, 6.15vw, 1.5rem); /* 24px @390 */
+  --spacing-page-y: clamp(0.5rem, 2.05vw, 0.75rem); /* 8px @390 */
+  /* 机が見える上下余白（紙の外側）@390 で約 16px */
+  --spacing-desk-y: clamp(0.75rem, 4.1vw, 1.25rem);
+  --spacing-header-top: clamp(2rem, 9vw, 3.5rem); /* 56px @390 */
+  --spacing-section: clamp(1.75rem, 5.1vw, 2.5rem); /* 40px @390 */
+  /* 破れ紙ヘッダー下 →「あなたの作品」行まで（top.PNG 参照） */
+  --spacing-after-torn-header: clamp(2.5rem, 10vw, 3.5rem);
+  /* 「あなたの作品」行の左右余白（紙幅の約 11%） */
+  --spacing-works-row-x: clamp(2rem, 11vw, 2.75rem);
+  --spacing-content: clamp(0.75rem, 3.08vw, 1rem); /* 12px @390 */
+  /* paper-3 上の見出し余白（サブタイトル用。主見出しは .atelier-header-title） */
+  --spacing-torn-header: clamp(1.25rem, 7vw, 2rem);
+
+  --text-title: clamp(1.25rem, 4.62vw, 1.35rem);
+  --text-atelier-header-title: 14px;
+  --text-atelier-header-lead: clamp(0.6875rem, 2.9vw, 0.75rem); /* 11–12px @390 */
+  /* paper-1 の角丸（素材に合わせた参考値 @390） */
+  --radius-paper1: clamp(10px, 2.8vw, 14px);
+  /* paper-2 左上装飾（角は画面端・テキストに被らない大きさ） */
+  --width-paper2-corner: clamp(3.75rem, 28vw, 7.25rem);
+  --text-body: clamp(0.8125rem, 3.33vw, 0.875rem);
+  /* メモ欄（16px → やや小さめ 14px @390） */
+  --text-memo-field: clamp(0.8125rem, 3.5vw, 0.875rem);
+  --text-label: clamp(0.875rem, 3.59vw, 0.9375rem);
+  /* トップ「あなたの作品」行（top.PNG・やや小さめ） */
+  --text-top-works-label: clamp(0.75rem, 3.08vw, 0.8125rem); /* 12–13px @390 */
+  --text-top-works-button: clamp(0.6875rem, 2.9vw, 0.75rem); /* 11–12px @390 */
+  --text-top-new-btn: clamp(0.625rem, 2.6vw, 0.6875rem); /* 10–11px @390・トップのみ */
+  --spacing-top-works-btn-y: clamp(0.25rem, 1vw, 0.375rem);
+  --spacing-top-works-btn-x: clamp(0.875rem, 3.5vw, 1.125rem);
+  --spacing-top-works-btn-word: 0.2em;
+
+  /* box-shadow 用（他コンポーネント向け） */
+  --shadow-paper: 10px 10px 4px 0 rgba(174, 171, 165, 0.25);
+  --shadow-work-card: 10px 10px 4px 0 rgba(160, 155, 148, 0.38);
+  /* 素材の形に沿う影（filter: drop-shadow） */
+  --drop-shadow-paper: drop-shadow(10px 10px 4px rgba(174, 171, 165, 0.25));
+  --drop-shadow-work-type-card: var(--drop-shadow-paper);
+  --drop-shadow-work-type-card-selected: drop-shadow(10px 10px 5px rgba(174, 171, 165, 0.42));
+  --scale-work-type-card-selected: 1.11;
+  /* 新規作成② タイトル入力（Figma 264×49 @390） */
+  --width-new-work-title: clamp(15rem, 67.7vw, 16.5rem);
+  --height-new-work-title: clamp(2.75rem, 12.56vw, 3.0625rem);
+  --radius-new-work-title: clamp(13px, 3.85vw, 15px);
+  --color-new-work-title-bg: #ffffff;
+  /* 新規作成③ 保存ボタン（薄緑ピル） */
+  --color-save-dest-fill: #e8ede6;
+  --color-save-dest-border: #59544c;
+  --color-save-dest-text: #4e5a3c;
+
+  --font-sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    'Noto Sans JP', system-ui, sans-serif;
+  --font-display: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho',
+    'Noto Serif JP', serif;
+  /* Figma 指定（トップ「あなたの作品」行） */
+  --font-yu-mincho: 'Yu Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'Noto Serif JP',
+    serif;
+  --font-yu-gothic-ui: 'Yu Gothic UI', 'YuGothic UI', 'Yu Gothic', 'YuGothic',
+    'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  --color-top-works-btn-text: #4e5a3c;
+  --color-top-works-btn-fill: #dfdcd6;
+  --color-top-works-btn-border: #59544c;
+  /* 共通ピルボタン（アトリエ・新規作成で共有） */
+  --color-pill-btn-text: var(--color-top-works-btn-text);
+  --color-pill-btn-fill: var(--color-top-works-btn-fill);
+  --color-pill-btn-border: var(--color-top-works-btn-border);
+  --color-desk: #e8dcc8;
+  /* 保管庫（Figma: 塗り #DBC49D / 内側線 15px = wood.png 代表色） */
+  --color-vault: #dbc49d;
+  --color-vault-stroke: #ac7f4a;
+  --width-vault-stroke: 12px;
+  --width-vault-stroke-top: 15px;
+  --color-ink: #3d3832;
+  --color-ink-soft: #6b6560;
+  --color-ink-placeholder: #a8a39c;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/*
+ * アトリエ共通ヘッダー（paper-3 上・中央揃え）
+ * Figma: Shippori Mincho Regular（見出し）
+ */
+.atelier-header-title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-atelier-header-title);
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.atelier-header-lead {
+  max-width: 28em;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-atelier-header-lead);
+  font-weight: 400;
+  line-height: 1.625;
+  text-align: center;
+  color: var(--color-ink-soft);
+}
+
+/* アトリエ — ヘッダー右上の画鋲（トップのみ） */
+.atelier-header__action {
+  z-index: 30;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: clamp(0.375rem, 2vw, 0.625rem) clamp(0.5rem, 2.5vw, 0.75rem) 0 0;
+  pointer-events: none;
+}
+
+.atelier-about-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.25rem, 1.2vw, 0.375rem);
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.atelier-about-pin:hover {
+  background: rgba(61, 56, 50, 0.06);
+}
+
+.atelier-about-pin:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.atelier-about-pin__icon {
+  display: block;
+  width: clamp(1.125rem, 5vw, 1.25rem);
+  height: clamp(1.125rem, 5vw, 1.25rem);
+}
+
+/* トップ「あなたの作品」+「新しくかく」行（top.PNG） */
+.top-works-row {
+  margin-top: var(--spacing-after-torn-header);
+  padding-inline: var(--spacing-works-row-x);
+}
+
+.top-works-row h2 {
+  font-family: var(--font-yu-mincho);
+  font-size: var(--text-top-works-label);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.top-works-new-btn,
+.app-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-top-works-btn-word);
+  flex-shrink: 0;
+  padding: var(--spacing-top-works-btn-y) var(--spacing-top-works-btn-x);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: var(--text-top-works-button);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-pill-btn-text);
+  background: var(--color-pill-btn-fill);
+  border: 1px solid var(--color-pill-btn-border);
+  border-radius: 9999px;
+  transition: background-color 0.15s;
+  cursor: pointer;
+}
+
+.top-works-new-btn:hover:not(:disabled),
+.app-pill-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-pill-btn-fill) 85%, var(--color-pill-btn-border));
+}
+
+.top-works-new-btn:focus-visible,
+.app-pill-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.app-pill-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.app-pill-btn--wide {
+  min-width: clamp(5.5rem, 28vw, 7rem);
+  padding-inline: clamp(1.25rem, 6vw, 1.75rem);
+}
+
+.app-pill-btn--top-new {
+  font-size: var(--text-top-new-btn);
+}
+
+/* 新規作成フロー共通 */
+.new-work-flow-content {
+  flex: 1;
+  min-height: 0;
+  align-items: center;
+  text-align: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.new-work-flow__prompt {
+  margin: clamp(2.5rem, 12vw, 4rem) 0 0;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.875rem, 3.5vw, 1rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.new-work-flow__prompt-sub {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.92em;
+  color: var(--color-ink-soft);
+}
+
+.new-work-flow__footer {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.75rem, 4vw, 1.25rem);
+  margin-top: auto;
+  padding-top: clamp(2rem, 10vw, 3.5rem);
+  padding-bottom: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* 新規作成① */
+.new-work-step1__cards {
+  display: flex;
+  width: 100%;
+  max-width: clamp(16rem, 72vw, 22.5rem);
+  justify-content: center;
+  gap: clamp(0.5rem, 2.5vw, 0.875rem);
+  margin-top: clamp(1.75rem, 7vw, 2.75rem);
+}
+
+/* 新規作成② — タイトル入力（Figma: 264×49, 角15, 白） */
+.new-work-title-field {
+  display: block;
+  width: var(--width-new-work-title);
+  max-width: 100%;
+  margin-top: clamp(1.75rem, 7vw, 2.75rem);
+  cursor: text;
+}
+
+.new-work-title-field__box {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: var(--height-new-work-title);
+  padding: 0 clamp(0.625rem, 3.5vw, 0.875rem);
+  border-radius: var(--radius-new-work-title);
+  background: var(--color-new-work-title-bg);
+}
+
+.new-work-title-field__box:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.new-work-title-field__input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink);
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.new-work-title-field__input::placeholder {
+  color: var(--color-ink-placeholder);
+  opacity: 1;
+  font-size: clamp(0.8125rem, 3.33vw, 0.9375rem); /* 13–15px @390 */
+}
+
+.new-work-title-field__input:focus {
+  outline: none;
+}
+
+/* 新規作成③ — アイデアメモ（idea_memo + テキスト） */
+.new-work-idea-memo {
+  display: block;
+  width: 100%;
+  max-width: clamp(18rem, 92vw, 22.5rem);
+  margin-top: clamp(1.75rem, 7vw, 2.75rem);
+  cursor: text;
+}
+
+.new-work-idea-memo__visual {
+  position: relative;
+  display: block;
+  width: 100%;
+  filter: var(--drop-shadow-paper);
+}
+
+.new-work-idea-memo__bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.new-work-idea-memo__textarea {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 20%;
+  bottom: 18%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: var(--text-memo-field);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-ink);
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.new-work-idea-memo__limit {
+  position: absolute;
+  right: 9%;
+  bottom: 13%;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-ink-placeholder);
+  pointer-events: none;
+}
+
+.new-work-idea-memo__textarea:focus {
+  outline: none;
+}
+
+.new-work-idea-memo--gated,
+.work-short-memo--gated {
+  cursor: default;
+}
+
+.memo-field__textarea--readonly {
+  cursor: text;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.memo-field__edit-btn {
+  position: absolute;
+  z-index: 1;
+  right: clamp(0.375rem, 2.2vw, 0.625rem);
+  bottom: clamp(0.3125rem, 1.8vw, 0.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.25rem, 1.2vw, 0.375rem);
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.memo-field__edit-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.memo-field__edit-btn-icon {
+  width: clamp(0.875rem, 3.6vw, 1rem);
+  height: clamp(0.875rem, 3.6vw, 1rem);
+}
+
+.new-work-step3__bottom {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+  padding-top: clamp(1.5rem, 6vw, 2.25rem);
+}
+
+.new-work-step3__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.875rem, 4.5vw, 1.375rem);
+  width: 100%;
+  max-width: clamp(10.5rem, 58vw, 13.5rem);
+}
+
+.new-work-flow-content .new-work-flow__footer {
+  padding-top: clamp(1rem, 4vw, 1.5rem);
+}
+
+.new-work-save-btn {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.1875rem, 1.2vw, 0.3125rem);
+  padding: clamp(0.375rem, 1.8vw, 0.5rem) clamp(0.625rem, 3.5vw, 0.875rem);
+  min-height: 2.75rem;
+  border: 1px solid var(--color-save-dest-border);
+  border-radius: 9999px;
+  background: var(--color-save-dest-fill);
+  font-family: var(--font-yu-gothic-ui);
+  color: var(--color-save-dest-text);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.15s;
+}
+
+.new-work-save-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-save-dest-fill) 85%, var(--color-save-dest-border));
+}
+
+.new-work-save-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-save-dest-border) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.new-work-save-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.new-work-save-btn__label {
+  font-size: clamp(0.75rem, 2.9vw, 0.8125rem);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.new-work-save-btn__label-vault {
+  letter-spacing: 0.12em;
+}
+
+.new-work-save-btn__icon {
+  width: clamp(0.8125rem, 3.2vw, 0.9375rem);
+  height: clamp(0.8125rem, 3.2vw, 0.9375rem);
+  flex-shrink: 0;
+}
+
+.new-work-flow-content .new-work-flow__footer:has(.app-pill-btn:only-child) {
+  padding-top: clamp(1.25rem, 5vw, 2rem);
+}
+
+.work-type-card {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  max-width: clamp(4.5rem, 22vw, 7.5rem);
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.375rem, 1.5vw, 0.5rem);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.work-type-card--selected {
+  z-index: 1;
+}
+
+.work-type-card__surface {
+  display: block;
+  width: 100%;
+}
+
+/* card-2 + pen：一つの表示単位（影はここだけ） */
+.work-type-card__visual {
+  position: relative;
+  display: block;
+  width: 100%;
+  filter: var(--drop-shadow-work-type-card);
+  transform-origin: center center;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
+}
+
+.work-type-card--selected .work-type-card__visual {
+  filter: var(--drop-shadow-work-type-card-selected);
+  transform: scale(var(--scale-work-type-card-selected));
+}
+
+.work-type-card__bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.work-type-card__icon {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+.work-type-card__icon--comic {
+  width: 44%;
+  max-height: 62%;
+}
+
+.work-type-card__icon--illustration {
+  width: 52%;
+  max-height: 58%;
+  top: 48%;
+}
+
+.work-type-card__icon--novel {
+  width: 72%;
+  max-height: 70%;
+  top: 47%;
+}
+
+.work-type-card__label {
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+
+.work-type-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 60%, transparent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/*
+ * 素材画像共通の影（Figma の素材の形に沿う）
+ * 使い方: <img class="material-drop-shadow" ... />
+ * ※ 外枠への box-shadow は使わない
+ */
+.material-drop-shadow {
+  display: block;
+  filter: var(--drop-shadow-paper);
+}
+
+.paper-sheet {
+  background: transparent;
+  border-radius: var(--radius-paper1);
+}
+
+/* paper-2：390px 枠の左上角（セーフエリア内・DeskFrame の外） */
+.paper-corner-deco {
+  top: 0;
+  left: 0;
+  width: var(--width-paper2-corner);
+  max-width: 36%;
+}
+
+/* トップ本文：行ごとに余白を分ける（works 行は .top-works-row） */
+.top-page-content {
+  padding-inline: 0;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0;
+  padding-bottom: clamp(0.5rem, 2vw, 0.875rem);
+  /*
+   * 844px 基準：ヘッダー・操作行・保管庫ボタン等を除いた残りを3カードで分配
+   * --atelier-chrome に保管庫ブロック分を多めに見込み、カードと両立
+   */
+  --atelier-chrome: 22rem;
+  --atelier-card-gap: clamp(0.625rem, 3vw, 1.375rem);
+  --atelier-card-size: max(
+    3.25rem,
+    calc((100dvh - var(--atelier-chrome) - 2 * var(--atelier-card-gap)) / 3)
+  );
+}
+
+.top-page-content .top-works-row {
+  flex-shrink: 0;
+  margin-top: clamp(1.5rem, 6vw, 2rem);
+}
+
+/* アトリエ — 作品カード一覧（atelier.PNG 左） */
+.atelier-works-list {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--atelier-card-gap);
+  width: 100%;
+  padding-inline: var(--spacing-works-row-x);
+  padding-top: clamp(0.625rem, 2.5vw, 0.875rem);
+  overflow: hidden;
+  justify-content: center;
+}
+
+.top-page-content .work-card {
+  flex: 0 0 auto;
+  height: var(--atelier-card-size);
+  max-height: var(--atelier-card-size);
+  padding: clamp(0.5rem, 2.2vw, 0.6875rem) clamp(0.5rem, 2.2vw, 0.625rem);
+}
+
+.top-page-content .work-card__thumb {
+  width: auto;
+  height: 100%;
+  max-width: 34%;
+  aspect-ratio: 1;
+}
+
+.work-card {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: clamp(0.625rem, 3vw, 0.875rem);
+  padding: clamp(0.6875rem, 3.2vw, 0.875rem) clamp(0.5rem, 2.2vw, 0.625rem);
+  border: none;
+  border-radius: clamp(14px, 4vw, 18px);
+  background: #ffffff;
+  box-shadow: var(--shadow-work-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.work-card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.work-card__thumb {
+  flex-shrink: 0;
+  width: clamp(4.625rem, 22vw, 5.375rem);
+  aspect-ratio: 1;
+  border-radius: clamp(10px, 2.8vw, 12px);
+  background: #f5f0e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.work-card__thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.work-card__thumb-icon {
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.work-card__thumb-icon--comic {
+  width: 44%;
+  max-height: 62%;
+}
+
+.work-card__thumb-icon--illustration {
+  width: 52%;
+  max-height: 58%;
+}
+
+.work-card__thumb-icon--novel {
+  width: 72%;
+  max-height: 70%;
+}
+
+.work-card__body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.125rem, 0.8vw, 0.25rem);
+}
+
+.work-card__title {
+  margin: 0;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.8125rem, 3.5vw, 0.875rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-card__type {
+  margin: 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink-soft);
+}
+
+.work-card__status {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: clamp(0.0625rem, 0.5vw, 0.125rem) 0 0;
+  padding: clamp(0.0625rem, 0.5vw, 0.125rem) clamp(0.4375rem, 2.2vw, 0.5625rem);
+  border-radius: 9999px;
+  background: #eceae4;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink-soft);
+}
+
+.work-card__status--complete {
+  background: #e3ebe0;
+  color: #4a6b42;
+  font-weight: 500;
+}
+
+/* アトリエ — 保管庫リンク（下部ピル） */
+.atelier-vault-footer {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: clamp(1.25rem, 5vw, 1.75rem);
+  padding-bottom: clamp(0.75rem, 3vw, 1.125rem);
+  padding-inline: var(--spacing-page-x);
+}
+
+.app-pill-btn--vault-link {
+  width: min(100%, clamp(14rem, 72vw, 18rem));
+  padding-block: clamp(0.375rem, 1.8vw, 0.5rem);
+  font-size: clamp(0.75rem, 3vw, 0.8125rem);
+}
+
+/* 保管庫 — 画面全体 #DBC49D、内側枠線 15px（wood.png 代表色） */
+.vault-screen {
+  display: flex;
+  box-sizing: border-box;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  background-color: var(--color-vault);
+  box-shadow:
+    inset 0 var(--width-vault-stroke-top) 0 0 var(--color-vault-stroke),
+    inset 0 calc(-1 * var(--width-vault-stroke)) 0 0 var(--color-vault-stroke),
+    inset var(--width-vault-stroke) 0 0 0 var(--color-vault-stroke),
+    inset calc(-1 * var(--width-vault-stroke)) 0 0 0 var(--color-vault-stroke);
+  overflow: hidden;
+}
+
+.vault-screen__body {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  width: calc(100% - 2 * var(--width-vault-stroke));
+  margin-inline: var(--width-vault-stroke);
+  margin-bottom: var(--width-vault-stroke);
+}
+
+/* 保管庫 — wood + gold ヘッダー（画面上部いっぱい） */
+.vault-header {
+  width: 100%;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.vault-header__grid {
+  display: grid;
+  width: 100%;
+}
+
+.vault-header__grid > * {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.vault-header__wood {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.vault-header__plaque-wrap {
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.625rem, 3vw, 1rem) var(--spacing-page-x);
+}
+
+.vault-header__plaque {
+  position: relative;
+  width: min(100%, clamp(14rem, 78vw, 18.5rem));
+}
+
+.vault-header__plaque-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.vault-header__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 0.75em;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.75rem, 3.3vw, 0.875rem);
+  font-weight: 400;
+  letter-spacing: clamp(0.04em, 0.45vw, 0.08em);
+  line-height: 1.45;
+  color: var(--color-ink);
+  text-align: center;
+}
+
+/* 保管庫 — 作品一覧 + 戻る（3枚時はアトリエ .top-page-content に準拠） */
+.vault-page-content {
+  padding-inline: 0;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+  /*
+   * カード高はアトリエ同式で固定。表示間隔は --vault-list-gap で別管理
+   */
+  --atelier-chrome: 22rem;
+  --vault-card-size-base-gap: clamp(0.625rem, 3vw, 1.375rem);
+  --vault-card-size: max(
+    3.25rem,
+    calc((100dvh - var(--atelier-chrome) - 2 * var(--vault-card-size-base-gap)) / 3)
+  );
+  --vault-card-fallback: var(--vault-card-size);
+  --vault-list-gap: clamp(1.125rem, 4.5vw, 2rem);
+}
+
+.vault-page-content .atelier-works-list {
+  flex: 1 1 0;
+  min-height: 0;
+  gap: var(--vault-list-gap);
+  padding-inline: var(--spacing-works-row-x);
+  padding-top: clamp(0.625rem, 2.5vw, 0.875rem);
+  overflow: hidden;
+  justify-content: center;
+}
+
+.vault-page-content .work-card {
+  flex: 0 0 auto;
+  height: var(--vault-card-fallback);
+  max-height: var(--vault-card-fallback);
+  padding: clamp(0.5rem, 2.2vw, 0.6875rem) clamp(0.5rem, 2.2vw, 0.625rem);
+  border-radius: clamp(14px, 4vw, 18px);
+  box-shadow: var(--shadow-work-card);
+}
+
+.vault-page-content .atelier-works-list:has(.work-card:nth-child(3)) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.vault-page-content .atelier-works-list:has(.work-card:nth-child(3)) .work-card {
+  flex: 0 0 auto;
+  height: var(--vault-card-size);
+  max-height: var(--vault-card-size);
+}
+
+.vault-page-content:has(.work-card:nth-child(3)) .vault-atelier-footer {
+  padding-top: clamp(1.125rem, 5vw, 1.5rem);
+  padding-bottom: clamp(0.5rem, 2.5vw, 0.875rem);
+}
+
+.vault-page-content .work-card__thumb {
+  width: auto;
+  height: 100%;
+  max-width: 34%;
+  aspect-ratio: 1;
+}
+
+.vault-atelier-footer {
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: clamp(1.125rem, 5vw, 1.625rem);
+  padding-bottom: clamp(0.5rem, 2.5vw, 0.875rem);
+  padding-inline: var(--spacing-page-x);
+}
+
+.new-work-step3__full-message {
+  margin: clamp(1rem, 4vw, 1.5rem) 0 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.8125rem, 3.2vw, 0.875rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 作品（編集）ページ — screenshot/atelier.PNG 右 */
+.work-edit-page {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  padding: clamp(1rem, 4.2vw, 1.25rem) clamp(1.125rem, 5.2vw, 1.375rem)
+    clamp(1.375rem, 5.5vw, 1.875rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.work-edit-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: clamp(0.875rem, 3.8vw, 1.125rem);
+}
+
+.work-edit-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: clamp(0.3125rem, 1.4vw, 0.4375rem);
+}
+
+.work-edit-section__title-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.25rem, 1.2vw, 0.375rem);
+  min-width: 0;
+}
+
+.work-edit-section__label {
+  margin: 0 0 clamp(0.3125rem, 1.4vw, 0.4375rem);
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.8125rem, 3.3vw, 0.875rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.work-edit-section__header .work-edit-section__label {
+  margin: 0;
+}
+
+.work-edit-section__limit {
+  flex-shrink: 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  color: var(--color-ink-soft);
+}
+
+.work-edit-hero {
+  display: flex;
+  gap: clamp(0.625rem, 3.2vw, 0.875rem);
+  align-items: flex-start;
+  padding-bottom: clamp(0.125rem, 0.6vw, 0.25rem);
+}
+
+.work-edit-hero__thumb-wrap {
+  flex-shrink: 0;
+}
+
+.work-edit-hero__thumb-btn {
+  position: relative;
+  display: block;
+  width: clamp(6.75rem, 33vw, 8rem);
+  aspect-ratio: 1;
+  padding: 0;
+  border: clamp(2px, 0.65vw, 3px) solid #ffffff;
+  border-radius: clamp(10px, 2.8vw, 12px);
+  background: #f5f0e6;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.work-edit-hero__thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.work-edit-hero__file-input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.work-edit-hero__thumb-icon {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.work-edit-hero__thumb-icon--comic {
+  width: 44%;
+  max-height: 62%;
+}
+
+.work-edit-hero__thumb-icon--illustration {
+  width: 52%;
+  max-height: 58%;
+  top: 48%;
+}
+
+.work-edit-hero__thumb-icon--novel {
+  width: 72%;
+  max-height: 70%;
+  top: 47%;
+}
+
+.work-edit-hero__change-label {
+  position: absolute;
+  right: clamp(0.3125rem, 1.4vw, 0.4375rem);
+  bottom: clamp(0.3125rem, 1.4vw, 0.4375rem);
+  left: auto;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2em;
+  padding: clamp(0.1875rem, 0.9vw, 0.25rem) clamp(0.375rem, 1.6vw, 0.5rem);
+  border: none;
+  border-radius: clamp(6px, 1.8vw, 8px);
+  background: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.5625rem, 2.3vw, 0.625rem);
+  line-height: 1.3;
+  color: var(--color-ink-soft);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.work-edit-hero__camera-icon {
+  width: clamp(0.6875rem, 2.8vw, 0.75rem);
+  height: clamp(0.6875rem, 2.8vw, 0.75rem);
+  flex-shrink: 0;
+}
+
+.work-edit-hero__meta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(0.1875rem, 0.9vw, 0.3125rem);
+  padding-top: 0.0625rem;
+}
+
+.work-edit-hero__type {
+  margin: 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  color: var(--color-ink-soft);
+}
+
+.work-edit-hero__title-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.25rem, 1.2vw, 0.375rem);
+  min-width: 0;
+}
+
+.work-edit-hero__title-field {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+
+.work-edit-hero__title {
+  margin: 0;
+  min-width: 0;
+  flex: 1;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-edit-hero__title-input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+
+.work-edit-hero__pencil-icon {
+  width: clamp(0.75rem, 3vw, 0.875rem);
+  height: clamp(0.75rem, 3vw, 0.875rem);
+  flex-shrink: 0;
+  color: var(--color-ink-soft);
+}
+
+.work-edit-hero__edit-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.work-edit-hero__edit-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-pill-btn-border) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.work-edit-hero__title-input:focus {
+  outline: none;
+}
+
+.work-edit-hero__status {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: clamp(0.125rem, 0.6vw, 0.1875rem) 0 0;
+  padding: clamp(0.125rem, 0.6vw, 0.1875rem) clamp(0.4375rem, 2vw, 0.5625rem);
+  border-radius: 9999px;
+  background: #eceae4;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  color: var(--color-ink-soft);
+}
+
+.work-edit-hero__status--complete {
+  background: #e3ebe0;
+  color: #4a6b42;
+  font-weight: 500;
+}
+
+.work-edit-hero__dates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  margin: clamp(0.1875rem, 0.9vw, 0.3125rem) 0 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.5625rem, 2.3vw, 0.625rem);
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.work-edit-hero__image-error {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
+  color: #9a4a4a;
+}
+
+.work-edit-section .new-work-idea-memo {
+  margin-top: 0;
+  max-width: none;
+}
+
+.work-edit-section .new-work-idea-memo__limit {
+  display: none;
+}
+
+/* 進捗ステップ */
+.work-progress {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(0.125rem, 0.6vw, 0.25rem) 0;
+  /* 横スクロール用のバーがラベル直下に見えるのを防ぐ（スワイプは可能） */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.work-progress::-webkit-scrollbar {
+  display: none;
+}
+
+.work-progress__track {
+  display: flex;
+  min-width: min-content;
+  align-items: flex-start;
+  gap: 0;
+  padding-inline: 0.125rem;
+}
+
+.work-progress__item {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: flex-start;
+  min-width: clamp(2.625rem, 11vw, 3.25rem);
+}
+
+.work-progress__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.work-progress__step:disabled {
+  cursor: default;
+}
+
+.work-progress__circle {
+  display: flex;
+  width: clamp(1.125rem, 4.8vw, 1.375rem);
+  height: clamp(1.125rem, 4.8vw, 1.375rem);
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1.5px solid #c5c0b8;
+  background: #ffffff;
+  color: #6b8f5e;
+}
+
+.work-progress__step--completed .work-progress__circle {
+  border-color: #6b8f5e;
+  background: #e8ede6;
+}
+
+.work-progress__step--current .work-progress__circle {
+  border-color: #6b8f5e;
+  border-width: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(107, 143, 94, 0.2);
+}
+
+.work-progress__step--future .work-progress__circle {
+  border-color: #d8d4cc;
+  background: #faf8f4;
+}
+
+.work-progress__check {
+  width: 62%;
+  height: 62%;
+}
+
+.work-progress__label {
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.5625rem, 2.3vw, 0.625rem);
+  line-height: 1.25;
+  color: var(--color-ink-soft);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.work-progress__step--current .work-progress__label {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.work-progress__line {
+  flex: 1 1 auto;
+  align-self: flex-start;
+  min-width: 0.375rem;
+  height: 0;
+  margin-top: calc(clamp(1.125rem, 4.8vw, 1.375rem) / 2);
+  border: none;
+  border-top: 1.5px dashed #c5c0b8;
+}
+
+/* ひとことメモ */
+.work-short-memo {
+  display: block;
+  width: 100%;
+}
+
+.work-short-memo__visual {
+  position: relative;
+  display: block;
+  width: 100%;
+  filter: var(--drop-shadow-paper);
+}
+
+.work-short-memo__bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.work-short-memo__textarea {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 16%;
+  bottom: 16%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: var(--text-memo-field);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.work-edit-section .work-short-memo__limit {
+  display: none;
+}
+
+.work-short-memo__limit {
+  position: absolute;
+  right: 8%;
+  bottom: 10%;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.6875rem, 2.8vw, 0.75rem);
+  color: var(--color-ink-placeholder);
+  pointer-events: none;
+}
+
+.work-short-memo__textarea:focus {
+  outline: none;
+}
+
+/* 保存・削除ボタン */
+.work-edit-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.4375rem, 2.2vw, 0.625rem);
+  width: 100%;
+  margin-top: clamp(1rem, 4.2vw, 1.375rem);
+  padding-top: clamp(0.125rem, 0.6vw, 0.25rem);
+}
+
+.work-edit-action {
+  display: flex;
+  min-height: clamp(4rem, 17vw, 4.75rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.25rem, 1.2vw, 0.375rem);
+  padding: clamp(0.4375rem, 2vw, 0.5625rem) clamp(0.25rem, 1.2vw, 0.375rem);
+  border: 1px solid var(--color-save-dest-border);
+  border-radius: clamp(14px, 4vw, 18px);
+  background: var(--color-save-dest-fill);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.5625rem, 2.25vw, 0.625rem);
+  line-height: 1.35;
+  color: var(--color-save-dest-text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.work-edit-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.work-edit-action--delete {
+  background: #f5ebe8;
+  border-color: #c4a8a3;
+  color: #8f4a45;
+}
+
+.work-edit-action__icon {
+  width: clamp(1.125rem, 4.8vw, 1.375rem);
+  height: clamp(1.125rem, 4.8vw, 1.375rem);
+}
+
+.work-edit-action__icon--delete {
+  color: #b8544f;
+}
+
+.work-edit-action__vault-word {
+  letter-spacing: 0.12em;
+}
+
+/* 確認ダイアログ */
+.confirm-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-page-x);
+}
+
+.confirm-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: none;
+  background: rgba(61, 56, 50, 0.35);
+  cursor: pointer;
+}
+
+.confirm-dialog__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 18rem);
+  padding: clamp(1rem, 4vw, 1.25rem);
+  border-radius: clamp(12px, 3.5vw, 16px);
+  background: #faf8f4;
+  box-shadow: 10px 10px 4px 0 rgba(174, 171, 165, 0.25);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.875rem, 3.5vw, 0.9375rem);
+  color: var(--color-ink);
+}
+
+.confirm-dialog__message {
+  margin: 0 0 1rem;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.8125rem, 3.2vw, 0.875rem);
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.5rem, 2.5vw, 0.75rem);
+}
+
+/* アトリエ — 注意モーダル */
+.atelier-about-modal__panel {
+  width: min(100%, 20.5rem);
+}
+
+.atelier-about-modal__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.375rem, 2vw, 0.5rem);
+  margin-bottom: clamp(0.625rem, 2.5vw, 0.75rem);
+}
+
+.atelier-about-modal__pin {
+  display: block;
+  flex-shrink: 0;
+  width: clamp(1.125rem, 4.8vw, 1.25rem);
+  height: clamp(1.125rem, 4.8vw, 1.25rem);
+}
+
+.atelier-about-modal__lead {
+  margin: 0 0 clamp(0.75rem, 3vw, 1rem);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.8125rem, 3.2vw, 0.875rem);
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+
+.atelier-about-modal__list {
+  margin: 0 0 clamp(1rem, 4vw, 1.25rem);
+  padding-left: 1.15em;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.8125rem, 3.2vw, 0.875rem);
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+}
+
+.atelier-about-modal__list li + li {
+  margin-top: clamp(0.375rem, 1.8vw, 0.5rem);
+}
+
+.atelier-about-modal__actions {
+  margin-top: 0;
+}
+
+.storage-full-modal__panel {
+  width: min(100%, 18rem);
+}
+
+.storage-full-modal__panel .confirm-dialog__title {
+  text-align: center;
+}
+
+.storage-full-modal__actions {
+  margin-top: clamp(0.75rem, 3vw, 1rem);
+}
+
+/* 作品入れ替え — 相手選択モーダル */
+.work-swap-picker-modal {
+  z-index: 105;
+}
+
+.work-swap-picker-modal__panel {
+  width: min(100%, 22rem);
+  max-height: min(90dvh, 36rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.work-swap-picker-modal__message {
+  margin-bottom: clamp(0.75rem, 3vw, 1rem);
+}
+
+.work-swap-picker-modal__list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 2.5vw, 0.75rem);
+  margin: 0 0 clamp(1rem, 4vw, 1.25rem);
+  padding: 0;
+  list-style: none;
+}
+
+.work-swap-picker-modal__list .work-card {
+  min-height: clamp(3.5rem, 16vw, 4.25rem);
+  padding: clamp(0.5rem, 2.2vw, 0.625rem);
+}
+
+.work-swap-picker-modal__list .work-card__thumb {
+  width: clamp(2.75rem, 12vw, 3.25rem);
+  height: clamp(2.75rem, 12vw, 3.25rem);
+  max-width: none;
+  aspect-ratio: 1;
+}
+
+.work-swap-picker-modal__actions {
+  margin-top: 0;
+}
+
+/* 作品情報編集モーダル */
+.work-edit-meta-modal__panel {
+  width: min(100%, 22rem);
+  max-height: min(90dvh, 34rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.work-edit-meta-modal__type-label {
+  margin: 0 0 clamp(0.5rem, 2vw, 0.625rem);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.75rem, 3vw, 0.8125rem);
+  color: var(--color-ink-soft);
+}
+
+.work-edit-meta-modal__types {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.375rem, 2vw, 0.625rem);
+  margin-bottom: clamp(0.875rem, 3.5vw, 1.125rem);
+}
+
+.work-edit-meta-modal__field {
+  margin-bottom: clamp(1rem, 4vw, 1.25rem);
+}
+
+.work-edit-meta-modal__field .new-work-title-field {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0;
+  margin-inline: auto;
+}
+
+.work-edit-meta-modal__actions {
+  margin-top: 0;
+}
+
+/* サムネ切り取りモーダル */
+.thumbnail-crop-modal {
+  z-index: 110;
+}
+
+.thumbnail-crop-modal__panel {
+  width: min(100%, 22rem);
+}
+
+.thumbnail-crop-modal__hint {
+  margin: 0 0 clamp(0.625rem, 2.5vw, 0.75rem);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.75rem, 3vw, 0.8125rem);
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.thumbnail-crop-modal__crop-area {
+  position: relative;
+  width: 100%;
+  height: clamp(14rem, 72vw, 18rem);
+  overflow: hidden;
+  border-radius: clamp(8px, 2.5vw, 12px);
+  background: #3d3832;
+}
+
+.thumbnail-crop-modal__crop-area .reactEasyCrop_Container {
+  border-radius: inherit;
+}
+
+.thumbnail-crop-modal__error {
+  margin: 0 0 clamp(0.75rem, 3vw, 1rem);
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.75rem, 3vw, 0.8125rem);
+  line-height: 1.4;
+  color: #9a4a4a;
+  text-align: center;
+}
+
+.thumbnail-crop-modal__zoom {
+  display: block;
+  margin: clamp(0.75rem, 3vw, 1rem) 0 clamp(0.875rem, 3.5vw, 1.125rem);
+}
+
+.thumbnail-crop-modal__zoom input[type='range'] {
+  display: block;
+  width: 100%;
+  margin: 0;
+  accent-color: #6b8f5e;
+}
+
+.thumbnail-crop-modal__actions {
+  margin-top: 0;
+}
+
+/* 作品完成 — 自動で消えるトースト */
+.work-complete-toast {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-page-x);
+  pointer-events: none;
+}
+
+.work-complete-toast__panel {
+  width: min(100%, 18rem);
+  padding: clamp(1rem, 4vw, 1.25rem);
+  border-radius: clamp(12px, 3.5vw, 16px);
+  background: #faf8f4;
+  box-shadow: 10px 10px 4px 0 rgba(174, 171, 165, 0.25);
+  text-align: center;
+  animation: work-complete-toast-in 0.28s ease-out;
+}
+
+.work-complete-toast__message {
+  margin: 0;
+  font-family: var(--font-yu-mincho);
+  font-size: clamp(0.9375rem, 3.8vw, 1rem);
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+@keyframes work-complete-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

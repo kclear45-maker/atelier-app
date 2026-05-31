@@ -1,0 +1,43 @@
+---
+description: アトリエ系画面の紙レイアウトと共通ヘッダーの再利用ルール
+globs: ui-app/src/pages/**/*.tsx, ui-app/src/components/Atelier*.tsx
+alwaysApply: false
+---
+
+# アトリエ系画面レイアウト
+
+## 共通ヘッダー（完成・固定）
+
+次の画面は **同じヘッダー状態** を維持する。文言・スタイルをページごとに書かない。
+
+- アトリエ（作品0件）— `TopPage`
+- アトリエ（作品あり）— 未実装
+- 新規作品登録 — 未実装
+
+### 使い方
+
+```tsx
+import AtelierPaperLayout from '../components/AtelierPaperLayout'
+
+export default function SomeAtelierPage() {
+  return (
+    <AtelierPaperLayout>
+      {/* PageContent など、ヘッダー直下の本文のみ */}
+    </AtelierPaperLayout>
+  )
+}
+```
+
+- ヘッダー本体: `AtelierHeader`（内部で `PaperTornTop` + 固定コピー）
+- コピー定数: `constants/atelierHeader.ts`
+- スタイル: `.atelier-header-title` / `.atelier-header-lead`（`index.css`）
+- ピルボタン: `.app-pill-btn`（アトリエ「新しくかく」と同じ）
+
+### 禁止
+
+- `PaperTornTop` にページ固有の見出しを直接渡す（共通ヘッダーを壊す）
+- `AtelierHeader` の文言を画面ごとに変える
+
+### 影
+
+素材画像は `.material-drop-shadow`（`filter: drop-shadow`）のみ。外枠の `box-shadow` は使わない。

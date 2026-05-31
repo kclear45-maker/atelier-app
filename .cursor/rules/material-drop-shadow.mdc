@@ -1,0 +1,31 @@
+---
+description: 素材画像への影は filter drop-shadow を使い、外枠の box-shadow は使わない
+globs: ui-app/src/**/*
+alwaysApply: false
+---
+
+# 素材へのドロップシャドウ
+
+Figma の素材（`material/*.png` など）に影を付けるときは、**レイアウト外枠ではなく、素材として描かれた形**に沿わせる。
+
+## 必須
+
+- **`filter: drop-shadow(...)`** を素材の `<img>`（または同等の描画要素）に適用する
+- クラス **`material-drop-shadow`**（`index.css`）を使う
+- 値は **`--drop-shadow-paper`**（Figma: X10 Y10 ぼかし4 `#AEABA5` 25%）
+
+## 禁止
+
+- 親の `article` / `div` に **`box-shadow` だけ**を付けて「紙に影がある」ように見せること
+- 外枠用の `.paper-sheet { box-shadow: ... }` のような指定
+
+## レイアウト
+
+- 影を切らないよう、必要なら親に `overflow-visible`
+- 机（`bg-desk`）は `DeskFrame` の余白で見せ、影は机の上に落ちる
+
+## 参考実装
+
+- `PaperSheet.tsx` … `paper-1.png` + `material-drop-shadow`
+- `PaperTornTop.tsx` … `paper-3.png` 幅100%で paper-1 上部に重ね、同じ `material-drop-shadow`
+- `PaperTornTop.tsx` … `paper-2.png` 左上装飾、同じ `material-drop-shadow`
