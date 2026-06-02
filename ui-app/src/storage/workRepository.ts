@@ -7,6 +7,7 @@ import { getInitialStepState } from '../constants/workProgress'
 import type { CreateWorkInput, Work, WorkLocation } from '../types/work'
 
 const STORAGE_KEY = 'sousaku-app:works'
+const STORAGE_ERROR_PREFIX = '[workRepository]'
 
 /** localhost 以外の HTTP（スマホ実機確認など）でも ID を生成できるようにする */
 function generateWorkId(): string {
@@ -28,27 +29,56 @@ function normalizeWork(raw: Work): Work {
   }
 }
 
-function readAll(): Work[] {
+function logStorageError(stage: string, error: unknown): void {
+  console.error(`${STORAGE_ERROR_PREFIX} ${stage}`, {
+    key: STORAGE_KEY,
+    origin: typeof location !== 'undefined' ? location.origin : 'unknown',
+    error,
+  })
+}
+
+function readAllOrThrow(): Work[] {
+  let raw: string | null = null
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as Work[]
-    return Array.isArray(parsed) ? parsed.map(normalizeWork) : []
-  } catch {
-    return []
+    raw = localStorage.getItem(STORAGE_KEY)
+  } catch (error) {
+    logStorageError('read:getItem failed', error)
+    throw new Error('作品データの読み込みに失敗しました')
   }
+
+  if (!raw) return []
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    logStorageError('read:JSON.parse failed', error)
+    throw new Error('作品データの読み込みに失敗しました')
+  }
+
+  if (!Array.isArray(parsed)) {
+    logStorageError('read:parsed value is not array', parsed)
+    throw new Error('作品データの読み込みに失敗しました')
+  }
+
+  return (parsed as Work[]).map(normalizeWork)
 }
 
 function writeAll(works: Work[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(works))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(works))
+  } catch (error) {
+    logStorageError('write:setItem failed', error)
+    throw new Error('作品データの保存に失敗しました')
+  }
 }
 
 export function loadWorks(): Work[] {
-  return readAll()
+  return readAllOrThrow()
 }
 
-export function getWorksByLocation(location: WorkLocation): Work[] {
-  return sortWorksByRecent(readAll().filter((work) => work.location === location))
+export function getWorksByLocation(location: WorkLocation, works = readAllOrThrow()): Work[] {
+  return sortWorksByRecent(works.filter((work) => work.location === location))
 }
 
 export function sortWorksByRecent(works: Work[]): Work[] {
@@ -61,12 +91,12 @@ export function countWorksByLocation(location: WorkLocation): number {
   return getWorksByLocation(location).length
 }
 
-export function isLocationFull(location: WorkLocation, works = readAll()): boolean {
+export function isLocationFull(location: WorkLocation, works = readAllOrThrow()): boolean {
   const max = location === 'atelier' ? MAX_WORKS_ATELIER : MAX_WORKS_VAULT
   return works.filter((w) => w.location === location).length >= max
 }
 
-export function canSaveToLocation(location: WorkLocation, works = readAll()): boolean {
+export function canSaveToLocation(location: WorkLocation, works = readAllOrThrow()): boolean {
   const atelierCount = works.filter((w) => w.location === 'atelier').length
   const vaultCount = works.filter((w) => w.location === 'vault').length
 
@@ -75,12 +105,12 @@ export function canSaveToLocation(location: WorkLocation, works = readAll()): bo
   return vaultCount < MAX_WORKS_VAULT
 }
 
-export function isStorageFull(works = readAll()): boolean {
+export function isStorageFull(works = readAllOrThrow()): boolean {
   return works.length >= MAX_WORKS_TOTAL
 }
 
 /** 新規作品を指定の場所へ追加できるか（満杯時は反対側に空きがあれば入れ替えで可） */
-export function canAddWorkToLocation(location: WorkLocation, works = readAll()): boolean {
+export function canAddWorkToLocation(location: WorkLocation, works = readAllOrThrow()): boolean {
   if (isStorageFull(works)) return false
   if (canSaveToLocation(location, works)) return true
   const other: WorkLocation = location === 'atelier' ? 'vault' : 'atelier'
@@ -88,7 +118,7 @@ export function canAddWorkToLocation(location: WorkLocation, works = readAll()):
 }
 
 /** 新規保存時に、満杯の場所へ入れ替えが必要か */
-export function needsDisplacementToLocation(location: WorkLocation, works = readAll()): boolean {
+export function needsDisplacementToLocation(location: WorkLocation, works = readAllOrThrow()): boolean {
   return !canSaveToLocation(location, works) && canAddWorkToLocation(location, works)
 }
 
@@ -113,7 +143,7 @@ export function createWork(input: CreateWorkInput): Work {
 }
 
 export function addWork(input: CreateWorkInput): Work {
-  const works = readAll()
+  const works = readAllOrThrow()
   if (!canSaveToLocation(input.location, works)) {
     throw new Error('Cannot save work to the selected location')
   }
@@ -125,7 +155,7 @@ export function addWork(input: CreateWorkInput): Work {
 
 /** 新規作品を追加し、指定場所の既存作品を反対側へ移す（入れ替え） */
 export function addWorkWithDisplacement(input: CreateWorkInput, displacedWorkId: string): Work {
-  const works = readAll()
+  const works = readAllOrThrow()
   if (!canAddWorkToLocation(input.location, works)) {
     throw new Error('Cannot add work to the selected location')
   }
@@ -150,11 +180,11 @@ export function saveWorks(works: Work[]): void {
 }
 
 export function getWorkById(id: string): Work | undefined {
-  return readAll().find((work) => work.id === id)
+  return readAllOrThrow().find((work) => work.id === id)
 }
 
 export function updateWork(updated: Work): void {
-  const works = readAll()
+  const works = readAllOrThrow()
   const index = works.findIndex((work) => work.id === updated.id)
   if (index === -1) return
   const next = [...works]
@@ -163,14 +193,14 @@ export function updateWork(updated: Work): void {
 }
 
 export function deleteWork(id: string): void {
-  writeAll(readAll().filter((work) => work.id !== id))
+  writeAll(readAllOrThrow().filter((work) => work.id !== id))
 }
 
 /** 作品を指定の場所へ保存できるか（既にその場所にある場合は常に可。満杯時は入れ替えで可） */
 export function canMoveWorkToLocation(
   work: Work,
   location: WorkLocation,
-  works = readAll(),
+  works = readAllOrThrow(),
 ): boolean {
   if (work.location === location) return true
   if (canSaveToLocation(location, works)) return true
@@ -179,7 +209,7 @@ export function canMoveWorkToLocation(
 
 /** 2 作品の location を入れ替える（満杯時のスワップ） */
 export function swapWorkLocations(workIdA: string, workIdB: string): void {
-  const works = readAll()
+  const works = readAllOrThrow()
   const indexA = works.findIndex((w) => w.id === workIdA)
   const indexB = works.findIndex((w) => w.id === workIdB)
   if (indexA === -1 || indexB === -1) return

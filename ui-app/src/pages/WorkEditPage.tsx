@@ -89,6 +89,7 @@ export default function WorkEditPage({
   const [swapPickerLocation, setSwapPickerLocation] = useState<WorkLocation | null>(null)
   const [pendingSwap, setPendingSwap] = useState<PendingSwap | null>(null)
   const [completeToastOpen, setCompleteToastOpen] = useState(false)
+  const [storageError, setStorageError] = useState<string | null>(null)
 
   const revokePendingCropUrl = useCallback(() => {
     setPendingCropUrl((prev) => {
@@ -112,6 +113,7 @@ export default function WorkEditPage({
       if (prev) URL.revokeObjectURL(prev)
       return null
     })
+    setStorageError(null)
   }, [initialWork.id])
 
   const currentStepLabel = getWorkCurrentStepLabel(work)
@@ -139,45 +141,64 @@ export default function WorkEditPage({
 
   const persistWork = useCallback(
     async (next: Work, location?: WorkLocation) => {
-      const saved: Work = {
-        ...next,
-        title: title.trim(),
-        ideaMemo: ideaMemo.trim(),
-        shortMemo: shortMemo.trim(),
-        location: location ?? next.location,
-        updatedAt: new Date().toISOString(),
-      }
+      try {
+        const saved: Work = {
+          ...next,
+          title: title.trim(),
+          ideaMemo: ideaMemo.trim(),
+          shortMemo: shortMemo.trim(),
+          location: location ?? next.location,
+          updatedAt: new Date().toISOString(),
+        }
 
-      if (pendingThumbnailBlob) {
-        await saveThumbnail(saved.id, pendingThumbnailBlob)
-        saved.thumbnailId = saved.id
-      }
+        if (pendingThumbnailBlob) {
+          await saveThumbnail(saved.id, pendingThumbnailBlob)
+          saved.thumbnailId = saved.id
+        }
 
-      updateWork(saved)
-      setWork(saved)
-      setPendingThumbnailBlob(null)
-      setPendingThumbnailUrl(null)
-      onWorkUpdated()
-      return saved
+        updateWork(saved)
+        setWork(saved)
+        setPendingThumbnailBlob(null)
+        setPendingThumbnailUrl(null)
+        setStorageError(null)
+        onWorkUpdated()
+        return saved
+      } catch (error) {
+        console.error('[WorkEditPage] persistWork failed', error)
+        setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+        throw error
+      }
     },
     [ideaMemo, onWorkUpdated, pendingThumbnailBlob, shortMemo, title],
   )
 
   const handleStepChange = useCallback(
     (nextWork: Work) => {
-      setWork(nextWork)
-      updateWork(nextWork)
-      onWorkUpdated()
+      try {
+        setWork(nextWork)
+        updateWork(nextWork)
+        setStorageError(null)
+        onWorkUpdated()
+      } catch (error) {
+        console.error('[WorkEditPage] handleStepChange failed', error)
+        setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+      }
     },
     [onWorkUpdated],
   )
 
   const handleComplete = useCallback(() => {
-    const next = completeWork(work)
-    setWork(next)
-    updateWork(next)
-    onWorkUpdated()
-    setCompleteToastOpen(true)
+    try {
+      const next = completeWork(work)
+      setWork(next)
+      updateWork(next)
+      setStorageError(null)
+      onWorkUpdated()
+      setCompleteToastOpen(true)
+    } catch (error) {
+      console.error('[WorkEditPage] handleComplete failed', error)
+      setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+    }
   }, [onWorkUpdated, work])
 
   const handlePickImage = useCallback((file: File) => {
@@ -245,33 +266,52 @@ export default function WorkEditPage({
 
   const handleConfirmSwap = useCallback(async () => {
     if (!pendingSwap) return
-    await persistWork(work, work.location)
-    swapWorkLocations(work.id, pendingSwap.partner.id)
-    onWorkUpdated()
-    setPendingSwap(null)
-    onClose()
+    try {
+      await persistWork(work, work.location)
+      swapWorkLocations(work.id, pendingSwap.partner.id)
+      setStorageError(null)
+      onWorkUpdated()
+      setPendingSwap(null)
+      onClose()
+    } catch (error) {
+      console.error('[WorkEditPage] handleConfirmSwap failed', error)
+      setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+    }
   }, [onClose, onWorkUpdated, pendingSwap, persistWork, work])
 
   const handleConfirmRetreat = useCallback(() => {
     if (!pendingRetreat) return
-    const next = retreatWorkStep(work, pendingRetreat.targetIndex)
-    setWork(next)
-    updateWork(next)
-    onWorkUpdated()
-    setPendingRetreat(null)
+    try {
+      const next = retreatWorkStep(work, pendingRetreat.targetIndex)
+      setWork(next)
+      updateWork(next)
+      setStorageError(null)
+      onWorkUpdated()
+      setPendingRetreat(null)
+    } catch (error) {
+      console.error('[WorkEditPage] handleConfirmRetreat failed', error)
+      setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+    }
   }, [onWorkUpdated, pendingRetreat, work])
 
   const handleConfirmDelete = useCallback(async () => {
-    if (work.thumbnailId) await deleteThumbnail(work.thumbnailId)
-    deleteWork(work.id)
-    onWorkUpdated()
-    setConfirmDelete(false)
-    onClose()
+    try {
+      if (work.thumbnailId) await deleteThumbnail(work.thumbnailId)
+      deleteWork(work.id)
+      setStorageError(null)
+      onWorkUpdated()
+      setConfirmDelete(false)
+      onClose()
+    } catch (error) {
+      console.error('[WorkEditPage] handleConfirmDelete failed', error)
+      setStorageError('作品データの読み込みまたは保存に失敗しました。再読み込みしてください。')
+    }
   }, [onClose, onWorkUpdated, work.id, work.thumbnailId])
 
   return (
     <WorkEditPaperLayout>
       <div className="work-edit-page">
+        {storageError ? <p className="storage-error-banner">{storageError}</p> : null}
         <WorkEditHero
           workType={work.type}
           title={title}

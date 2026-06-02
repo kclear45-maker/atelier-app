@@ -99,6 +99,18 @@ body {
   width: 100%;
 }
 
+.storage-error-banner {
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  background: #f8e9e7;
+  border-bottom: 1px solid #d2b1ab;
+  color: #7d3e38;
+  font-family: var(--font-yu-gothic-ui);
+  font-size: clamp(0.75rem, 3vw, 0.8125rem);
+  line-height: 1.45;
+  text-align: center;
+}
+
 /*
  * アトリエ共通ヘッダー（paper-3 上・中央揃え）
  * Figma: Shippori Mincho Regular（見出し）
